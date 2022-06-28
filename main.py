@@ -15,11 +15,13 @@ def plot_chart(dataframe, category):
     data_plot = dataframe.query('industry == @category')
 
     fig, ax = plt.subplots(figsize=(8,6))
+    plt.ylim(70, 120)
     ax = sns.barplot(x = 'size', y = 'overall_score', data = data_plot)
-    ax.set_title(f'Numer of companies at {category}', fontsize = 16)
-    ax.set_xlabel('industry', fontsize = 12)
+    ax.set_title(f'Overall Score by Companie`s size at {category}', fontsize = 16)
+    ax.set_xlabel('Size of the company (no. of employees)', fontsize = 12)
+   
     ax.tick_params(rotation = 20, axis = 'x')
-    ax.set_ylabel('size', fontsize = 12)
+    ax.set_ylabel('Overall score', fontsize = 12)
   
     return fig
 
@@ -27,7 +29,7 @@ def plot_chart(dataframe, category):
 b_data = pd.read_csv('b_impact_simple.csv',index_col=0,sep=';')
 
 st.title('B Corp analysis: an investor`s perspective\n')
-st.write('This article aims to propose suitable impact-based incentive structures for Impact Fund Managers using by B-Corp Scores')
+st.write('This tool aims to explore B-Corp Scores in order to propose suitable impact-based incentive structures for Impact Fund Managers')
 
 #show table
 checkbox_show_table = st.sidebar.checkbox('Show Table')
