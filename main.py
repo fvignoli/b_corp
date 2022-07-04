@@ -1,8 +1,34 @@
+from threading import activeCount
 from unicodedata import category
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import streamlit as st
+import snowflake.connector
+
+
+# Initialize connection.
+# Uses st.experimental_singleton to only run once.
+@st.experimental_singleton
+def init_connection():
+    return snowflake.connector.connect(**st.secrets["snowflake"])
+
+conn = init_connection()
+
+# Perform query.
+# Uses st.experimental_memo to only rerun when the query changes or after 10 min.
+@st.experimental_memo(ttl=600)
+def run_query(query):
+    with conn.cursor() as cur:
+        cur.execute(query)
+        return cur.fetchall()
+
+tb_country = run_query("SELECT distinct COUNTRY from CORP_SCORES ORDER BY COUNTRY;")
+
+#Country filter
+# table_country = pd.read_sql("select distinct COUNTRY from B_CORP.B_CORP_SCHEMA.CORP_SCORES limit 50;",conn)
+option = st.selectbox('Select Country:', tb_country)
+
 
 # function to select number os lines to display
 def show_line_number(dataframe):
@@ -53,9 +79,5 @@ st.sidebar.markdown('## Chart filter')
 chart_category = st.sidebar.selectbox('Select Industry to be displayed: ', options=b_data['industry'].unique())
 chart = plot_chart(b_data,chart_category)
 st.pyplot(chart)
-
-
-
-
 
 
